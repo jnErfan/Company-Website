@@ -1,0 +1,194 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Services - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-dark sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column pt-3">
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="{{ url_for('admin.services') }}">
+                            <i class="fas fa-tools me-2"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.portfolio') }}">
+                            <i class="fas fa-briefcase me-2"></i>Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.blog') }}">
+                            <i class="fas fa-blog me-2"></i>Blog
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.team') }}">
+                            <i class="fas fa-users me-2"></i>Team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.testimonials') }}">
+                            <i class="fas fa-star me-2"></i>Testimonials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.contacts') }}">
+                            <i class="fas fa-envelope me-2"></i>Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.edit_company') }}">
+                            <i class="fas fa-building me-2"></i>Company
+                        </a>
+                    </li>
+                    {% if current_user.role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.users') }}">
+                            <i class="fas fa-user-shield me-2"></i>Users
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-tools me-2"></i>Manage Services</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{{ url_for('admin.new_service') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Service
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Services Grid -->
+            {% if services %}
+                <div class="row">
+                    {% for service in services %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm service-card">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h5 class="card-title text-primary mb-0">
+                                        <i class="fas fa-wrench me-2"></i>{{ service.title }}
+                                    </h5>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="{{ url_for('admin.edit_service', service_id=service.id) }}">
+                                                <i class="fas fa-edit me-2"></i>Edit
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete({{ service.id }}, '{{ service.title }}')">
+                                                <i class="fas fa-trash me-2"></i>Delete
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p class="card-text flex-grow-1">{{ service.description | truncate(120) }}</p>
+                                {% if service.image %}
+                                <div class="mt-3">
+                                    <img src="{{ service.image }}" alt="{{ service.title }}" class="img-fluid rounded" style="max-height: 150px; width: 100%; object-fit: cover;">
+                                </div>
+                                {% endif %}
+                                <div class="mt-3">
+                                    <a href="{{ url_for('admin.edit_service', service_id=service.id) }}" class="btn btn-outline-primary btn-sm me-2">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete({{ service.id }}, '{{ service.title }}')">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-5">
+                    <i class="fas fa-tools fa-4x text-muted mb-4"></i>
+                    <h4 class="text-muted mb-3">No services found</h4>
+                    <p class="text-muted mb-4">Start building your services section by adding your first service.</p>
+                    <a href="{{ url_for('admin.new_service') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create Your First Service
+                    </a>
+                </div>
+            {% endif %}
+
+            <!-- Statistics Card -->
+            {% if services %}
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                            <h4>{{ services|length }}</h4>
+                            <p class="mb-0">Total Services</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the service "<strong id="serviceTitle"></strong>"?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete Service
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(serviceId, serviceTitle) {
+    document.getElementById('serviceTitle').textContent = serviceTitle;
+    document.getElementById('deleteForm').action = '{{ url_for("admin.delete_service", service_id=0) }}'.replace('0', serviceId);
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

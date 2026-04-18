@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - {{ company.name if company else 'Company Website' }}{% endblock %}
+
+{% block head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(155, 89, 182, 0.9)), url('https://picsum.photos/1920/600?random=contact');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 120px 0;
+        position: relative;
+    }
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="contact-pattern" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23contact-pattern)"/></svg>');
+    }
+    .contact-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .contact-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #3498db, #9b59b6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+    }
+    .contact-form {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    .form-floating {
+        margin-bottom: 20px;
+    }
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    .map-section {
+        background: #f8f9fa;
+        padding: 100px 0;
+    }
+    .map-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        height: 400px;
+    }
+    .faq-contact {
+        background: white;
+        padding: 100px 0;
+    }
+    .faq-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    .faq-question {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 20px 30px;
+        text-align: left;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .faq-question:hover {
+        background: #e9ecef;
+    }
+    .faq-answer {
+        padding: 0 30px 20px;
+        display: none;
+        color: #6c757d;
+    }
+    .faq-icon {
+        float: right;
+        transition: transform 0.3s ease;
+    }
+    .social-links {
+        margin-top: 30px;
+    }
+    .social-links a {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #3498db, #9b59b6);
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 50px;
+        margin: 0 10px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    .social-links a:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+    }
+    .cta-contact {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Get In Touch</h1>
+                <p class="lead fs-5 mb-4">
+                    Ready to start your next project? We'd love to hear from you.
+                    Send us a message and we'll respond as soon as possible.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#contact-form" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                        <i class="fas fa-envelope me-2"></i>Send Message
+                    </a>
+                    <a href="tel:{{ company.phone if company else '+1-555-0123' }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-phone me-2"></i>Call Now
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://picsum.photos/500/400?random=communication" alt="Contact Us" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Methods -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Multiple Ways to Reach Us</h2>
+                <p class="lead text-muted">Choose the method that works best for you</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h4 class="mb-3">Phone</h4>
+                    <p class="text-muted mb-3">{{ company.phone if company else '+86 13534774526' }}</p>
+                    <p class="small text-muted">Mon-Fri 9AM-6PM EST</p>
+                    <a href="tel:{{ company.phone if company else '+86 13534774526' }}" class="btn btn-primary">
+                        <i class="fas fa-phone me-2"></i>Call Now
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="mb-3">Email</h4>
+                    <p class="text-muted mb-3">{{ company.email if company else 'info@designrush.com' }}</p>
+                    <p class="small text-muted">We respond within 24 hours</p>
+                    <a href="mailto:{{ company.email if company else 'info@company.com' }}" class="btn btn-primary">
+                        <i class="fas fa-envelope me-2"></i>Send Email
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4 class="mb-3">Office</h4>
+                    <p class="text-muted mb-3">{{ company.address if company else 'Jurong, Zhenjianng, Jiangsu, China' }}</p>
+                    <p class="small text-muted">Visit us in person</p>
+                    <a href="#map" class="btn btn-primary">
+                        <i class="fas fa-map me-2"></i>Get Directions
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4 class="mb-3">Live Chat</h4>
+                    <p class="text-muted mb-3">Chat with our team</p>
+                    <p class="small text-muted">Available 24/7</p>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-comments me-2"></i>Start Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form & Info -->
+<section id="contact-form" class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="contact-form">
+                    <h3 class="mb-4">Send us a Message</h3>
+                    <p class="text-muted mb-4">Fill out the form below and we'll get back to you within 24 hours.</p>
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="form-floating">
+                            {{ form.name(class="form-control", placeholder="Your Name") }}
+                            {{ form.name.label() }}
+                            {% if form.name.errors %}
+                                {% for error in form.name.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="form-floating">
+                            {{ form.email(class="form-control", placeholder="your@email.com") }}
+                            {{ form.email.label() }}
+                            {% if form.email.errors %}
+                                {% for error in form.email.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="form-floating">
+                            {{ form.subject(class="form-control", placeholder="Subject") }}
+                            {{ form.subject.label() }}
+                        </div>
+                        <div class="form-floating">
+                            {{ form.message(class="form-control", rows=5, placeholder="Your message...") }}
+                            {{ form.message.label() }}
+                            {% if form.message.errors %}
+                                {% for error in form.message.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {{ form.submit(class="btn btn-primary btn-lg w-100") }}
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="contact-card">
+                    <h3 class="mb-4">Why Choose Us?</h3>
+                    <div class="mb-4">
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="mb-1">Expert Team</h6>
+                                <p class="text-muted small mb-0">Our experienced professionals deliver exceptional results</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="mb-1">Quick Response</h6>
+                                <p class="text-muted small mb-0">We respond to all inquiries within 24 hours</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="mb-1">Custom Solutions</h6>
+                                <p class="text-muted small mb-0">Tailored solutions that fit your specific needs</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <h6 class="mb-1">Ongoing Support</h6>
+                                <p class="text-muted small mb-0">Continuous support and maintenance after launch</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <h6 class="mb-3">Follow Us</h6>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section id="map" class="map-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Find Us</h2>
+                <p class="lead text-muted">Visit our office or get directions</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="map-container">
+                    <!-- Replace with actual map embed -->
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.1!2d-73.98!3d40.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDAuNzUsLTczLjk4!5e0!3m2!1sen!2sus!4v1234567890!5m2!1sen!2sus"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-contact">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Frequently Asked Questions</h2>
+                <p class="lead text-muted">Everything you need to know about working with us</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How quickly do you respond to inquiries?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We typically respond to all inquiries within 24 hours during business days. For urgent matters, we aim to respond within 4-6 hours.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do you offer free consultations?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we offer free initial consultations to discuss your project requirements and provide preliminary recommendations.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What is your typical project timeline?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Project timelines vary based on complexity. Simple websites take 2-4 weeks, while complex applications may take 3-6 months. We'll provide a detailed timeline after our initial consultation.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do you provide ongoing support?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! We offer comprehensive maintenance and support packages to ensure your solution continues to perform optimally after launch.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can you work with existing systems?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we specialize in system integration and can work seamlessly with your existing infrastructure, databases, and third-party services.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-contact">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold mb-4">Ready to Start Your Project?</h2>
+                <p class="lead mb-4">Let's turn your vision into reality. Contact us today and let's build something amazing together.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#contact-form" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                        <i class="fas fa-paper-plane me-2"></i>Get Started Now
+                    </a>
+                    <a href="{{ url_for('main.services') }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-list me-2"></i>View Our Services
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="bg-white bg-opacity-10 p-4 rounded-3">
+                    <i class="fas fa-clock fa-4x text-warning mb-3"></i>
+                    <h4 class="fw-bold">Fast Turnaround</h4>
+                    <p class="mb-0">Most projects completed within 4-6 weeks</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('.faq-icon');
+            const isOpen = answer.style.display === 'block';
+
+            // Close all FAQs
+            document.querySelectorAll('.faq-answer').forEach(ans => ans.style.display = 'none');
+            document.querySelectorAll('.faq-icon').forEach(ic => ic.style.transform = 'rotate(0deg)');
+
+            // Open clicked FAQ if it wasn't already open
+            if (!isOpen) {
+                answer.style.display = 'block';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+    // Form validation enhancement
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+            submitBtn.disabled = true;
+
+            // Re-enable after 3 seconds (in case of no redirect)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+    }
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Contact card hover effects
+    document.querySelectorAll('.contact-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

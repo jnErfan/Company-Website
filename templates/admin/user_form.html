@@ -1,0 +1,196 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ legend }} - User Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-dark sidebar">
+            <div class="sidebar-sticky">
+                <ul class="nav flex-column pt-3">
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.services') }}">
+                            <i class="fas fa-tools me-2"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.portfolio') }}">
+                            <i class="fas fa-briefcase me-2"></i>Portfolio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.blog') }}">
+                            <i class="fas fa-blog me-2"></i>Blog
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.team') }}">
+                            <i class="fas fa-users me-2"></i>Team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.testimonials') }}">
+                            <i class="fas fa-star me-2"></i>Testimonials
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.contacts') }}">
+                            <i class="fas fa-envelope me-2"></i>Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white-50" href="{{ url_for('admin.edit_company') }}">
+                            <i class="fas fa-building me-2"></i>Company
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="{{ url_for('admin.users') }}">
+                            <i class="fas fa-user-shield me-2"></i>Users
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-10 ms-sm-auto px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"><i class="fas fa-user-{{ 'plus' if 'New' in legend else 'edit' }} me-2"></i>{{ legend }}</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Users
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- User Form -->
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-user me-2"></i>{{ legend }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+
+                                <div class="mb-3">
+                                    {{ form.username.label(class="form-label") }}
+                                    {% if form.username.errors %}
+                                        {{ form.username(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.username.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.username(class="form-control") }}
+                                    {% endif %}
+                                    <div class="form-text">Choose a unique username for the user.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.email.label(class="form-label") }}
+                                    {% if form.email.errors %}
+                                        {{ form.email(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.email.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.email(class="form-control") }}
+                                    {% endif %}
+                                    <div class="form-text">Enter a valid email address.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.password.label(class="form-label") }}
+                                    {% if form.password.errors %}
+                                        {{ form.password(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.password.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.password(class="form-control") }}
+                                    {% endif %}
+                                    <div class="form-text">
+                                        {% if 'Edit' in legend %}
+                                            Leave blank to keep current password.
+                                        {% else %}
+                                            Choose a strong password.
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form.role.label(class="form-label") }}
+                                    {% if form.role.errors %}
+                                        {{ form.role(class="form-control is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.role.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <select class="form-select" id="role" name="role">
+                                            <option value="moderator" {{ 'selected' if form.role.data == 'moderator' else '' }}>Moderator</option>
+                                            <option value="admin" {{ 'selected' if form.role.data == 'admin' else '' }}>Administrator</option>
+                                        </select>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        <strong>Administrator:</strong> Full access to all features including user management.<br>
+                                        <strong>Moderator:</strong> Can manage content but not users.
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary me-md-2">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </a>
+                                    {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Security Notes -->
+                    <div class="card mt-3 border-warning">
+                        <div class="card-body">
+                            <h6 class="card-title text-warning">
+                                <i class="fas fa-shield-alt me-2"></i>Security Notes
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Use strong, unique passwords for all user accounts</li>
+                                <li>Only grant administrator privileges to trusted users</li>
+                                <li>Regularly review and update user access as needed</li>
+                                <li>You cannot delete your own account for security reasons</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

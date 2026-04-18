@@ -1,0 +1,521 @@
+{% extends "base.html" %}
+
+{% block title %}Services - {{ company.name if company else 'Company Website' }}{% endblock %}
+
+{% block head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+    .services-hero {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(155, 89, 182, 0.9)), url('https://picsum.photos/1920/600?random=services');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 120px 0;
+        position: relative;
+    }
+    .services-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="services-pattern" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23services-pattern)"/></svg>');
+    }
+    .service-category {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    .service-category::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #3498db, #9b59b6);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    .service-category:hover::before {
+        transform: scaleX(1);
+    }
+    .service-category:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    .service-icon {
+        font-size: 4rem;
+        color: #3498db;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .service-category:hover .service-icon {
+        transform: scale(1.1);
+        color: #9b59b6;
+    }
+    .pricing-section {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 100px 0;
+    }
+    .pricing-card {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .pricing-card.popular {
+        transform: scale(1.05);
+        border: 3px solid #3498db;
+    }
+    .pricing-card.popular::before {
+        content: 'Most Popular';
+        position: absolute;
+        top: 15px;
+        right: -30px;
+        background: #3498db;
+        color: white;
+        padding: 5px 40px;
+        transform: rotate(45deg);
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+    .price {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #3498db;
+        margin: 20px 0;
+    }
+    .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 30px 0;
+    }
+    .features-list li {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .features-list li:last-child {
+        border-bottom: none;
+    }
+    .features-list i {
+        color: #27ae60;
+        margin-right: 10px;
+    }
+    .process-section {
+        background: white;
+        padding: 100px 0;
+    }
+    .process-step {
+        text-align: center;
+        position: relative;
+        margin-bottom: 50px;
+    }
+    .process-number {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #3498db, #9b59b6);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+    }
+    .process-line {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        width: calc(100% - 80px);
+        height: 2px;
+        background: linear-gradient(90deg, #3498db, #9b59b6);
+        z-index: -1;
+    }
+    .process-step:not(:last-child) .process-line {
+        display: block;
+    }
+    .faq-section {
+        background: #f8f9fa;
+        padding: 100px 0;
+    }
+    .faq-item {
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .faq-question {
+        background: none;
+        border: none;
+        width: 100%;
+        padding: 20px 30px;
+        text-align: left;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .faq-question:hover {
+        background: #f8f9fa;
+    }
+    .faq-answer {
+        padding: 0 30px 20px;
+        display: none;
+    }
+    .faq-icon {
+        float: right;
+        transition: transform 0.3s ease;
+    }
+    .cta-services {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="services-hero">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Our Services</h1>
+                <p class="lead fs-5 mb-4">
+                    Comprehensive technology solutions designed to accelerate your business growth and digital transformation.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                        <i class="fas fa-rocket me-2"></i>Get Started Today
+                    </a>
+                    <a href="#pricing" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-tags me-2"></i>View Pricing
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://picsum.photos/500/400?random=technology" alt="Technology Solutions" class="img-fluid rounded shadow-lg">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Categories -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">What We Offer</h2>
+                <p class="lead text-muted">Comprehensive solutions tailored to your business needs</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6">
+                <div class="service-category">
+                    <div class="service-icon">
+                        {% if loop.index == 1 %}
+                        <i class="fas fa-code"></i>
+                        {% elif loop.index == 2 %}
+                        <i class="fas fa-mobile-alt"></i>
+                        {% elif loop.index == 3 %}
+                        <i class="fas fa-cloud"></i>
+                        {% elif loop.index == 4 %}
+                        <i class="fas fa-shield-alt"></i>
+                        {% elif loop.index == 5 %}
+                        <i class="fas fa-chart-line"></i>
+                        {% else %}
+                        <i class="fas fa-cogs"></i>
+                        {% endif %}
+                    </div>
+                    <h4 class="mb-3">{{ service.title }}</h4>
+                    <p class="text-muted mb-4">{{ service.description }}</p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i>Custom Solutions</li>
+                        <li><i class="fas fa-check"></i>Expert Team</li>
+                        <li><i class="fas fa-check"></i>24/7 Support</li>
+                        <li><i class="fas fa-check"></i>Quality Assurance</li>
+                    </ul>
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right me-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Pricing Plans</h2>
+                <p class="lead text-muted">Choose the perfect plan for your business needs</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="pricing-card">
+                    <h4 class="mb-3">Starter</h4>
+                    <div class="price">$99<span class="text-muted">/month</span></div>
+                    <p class="text-muted">Perfect for small businesses</p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i>Basic Website</li>
+                        <li><i class="fas fa-check"></i>Email Support</li>
+                        <li><i class="fas fa-check"></i>5 Pages</li>
+                        <li><i class="fas fa-check"></i>Basic SEO</li>
+                    </ul>
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-outline-primary">Get Started</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="pricing-card popular">
+                    <h4 class="mb-3">Professional</h4>
+                    <div class="price">$299<span class="text-muted">/month</span></div>
+                    <p class="text-muted">Ideal for growing businesses</p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i>Advanced Website</li>
+                        <li><i class="fas fa-check"></i>Priority Support</li>
+                        <li><i class="fas fa-check"></i>Unlimited Pages</li>
+                        <li><i class="fas fa-check"></i>Advanced SEO</li>
+                        <li><i class="fas fa-check"></i>Analytics</li>
+                    </ul>
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="pricing-card">
+                    <h4 class="mb-3">Enterprise</h4>
+                    <div class="price">$599<span class="text-muted">/month</span></div>
+                    <p class="text-muted">For large organizations</p>
+                    <ul class="features-list">
+                        <li><i class="fas fa-check"></i>Custom Solutions</li>
+                        <li><i class="fas fa-check"></i>24/7 Support</li>
+                        <li><i class="fas fa-check"></i>Dedicated Team</li>
+                        <li><i class="fas fa-check"></i>Advanced Analytics</li>
+                        <li><i class="fas fa-check"></i>Custom Integrations</li>
+                    </ul>
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-outline-primary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Section -->
+<section class="process-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Our Process</h2>
+                <p class="lead text-muted">How we turn your vision into reality</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">1</div>
+                <h5 class="mb-3">Discovery</h5>
+                <p class="text-muted">We understand your requirements and goals</p>
+                <div class="process-line"></div>
+            </div>
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">2</div>
+                <h5 class="mb-3">Planning</h5>
+                <p class="text-muted">We create a detailed project roadmap</p>
+                <div class="process-line"></div>
+            </div>
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">3</div>
+                <h5 class="mb-3">Design</h5>
+                <p class="text-muted">We craft beautiful and functional designs</p>
+                <div class="process-line"></div>
+            </div>
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">4</div>
+                <h5 class="mb-3">Development</h5>
+                <p class="text-muted">We build robust and scalable solutions</p>
+                <div class="process-line"></div>
+            </div>
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">5</div>
+                <h5 class="mb-3">Testing</h5>
+                <p class="text-muted">We ensure quality and performance</p>
+                <div class="process-line"></div>
+            </div>
+            <div class="col-lg-2 col-md-4 process-step">
+                <div class="process-number">6</div>
+                <h5 class="mb-3">Launch</h5>
+                <p class="text-muted">We deploy and provide ongoing support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-3">Frequently Asked Questions</h2>
+                <p class="lead text-muted">Everything you need to know about our services</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How long does a typical project take?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Project timelines vary depending on complexity and scope. A basic website typically takes 2-4 weeks, while complex applications can take 3-6 months. We'll provide a detailed timeline during our initial consultation.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do you provide ongoing support?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we offer comprehensive maintenance and support packages. Our team provides 24/7 monitoring, regular updates, security patches, and technical support to ensure your solution continues to perform optimally.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What technologies do you use?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We use cutting-edge technologies including React, Node.js, Python, AWS, Docker, and more. We choose the best technology stack based on your specific requirements and scalability needs.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can you work with our existing systems?
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! We specialize in system integration and can work with your existing infrastructure. Whether you need API integrations, database migrations, or third-party service connections, we've got you covered.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-services">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Business?</h2>
+                <p class="lead mb-4">Let's discuss how our services can help you achieve your goals</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('main.contact') }}" class="btn btn-warning btn-lg px-4 py-3 fw-bold">
+                        <i class="fas fa-paper-plane me-2"></i>Start Your Project
+                    </a>
+                    <a href="tel:{{ company.phone if company else '+1-555-0123' }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fas fa-phone me-2"></i>Call Us Now
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                <div class="bg-white bg-opacity-10 p-4 rounded-3">
+                    <i class="fas fa-clock fa-4x text-warning mb-3"></i>
+                    <h4 class="fw-bold">Quick Response</h4>
+                    <p class="mb-0">We respond to inquiries within 24 hours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('.faq-icon');
+            const isOpen = answer.style.display === 'block';
+
+            // Close all FAQs
+            document.querySelectorAll('.faq-answer').forEach(ans => ans.style.display = 'none');
+            document.querySelectorAll('.faq-icon').forEach(ic => ic.style.transform = 'rotate(0deg)');
+
+            // Open clicked FAQ if it wasn't already open
+            if (!isOpen) {
+                answer.style.display = 'block';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+    // Pricing card hover effects
+    document.querySelectorAll('.pricing-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('popular')) {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            }
+        });
+        card.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('popular')) {
+                this.style.transform = 'translateY(0) scale(1)';
+            }
+        });
+    });
+
+    // Process step animations
+    const processObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+
+    document.querySelectorAll('.process-step').forEach(step => {
+        step.style.opacity = '0';
+        step.style.transform = 'translateY(30px)';
+        step.style.transition = 'all 0.6s ease';
+        processObserver.observe(step);
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

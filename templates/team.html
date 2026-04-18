@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Team - Company Website{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-4">Our Team</h1>
+        <p class="text-center lead mb-5">Meet the talented professionals who make our company great.</p>
+        <div class="row">
+            {% for member in members %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center shadow-sm">
+                    {% if member.image %}
+                    <img src="https://picsum.photos/300/300?random={{ loop.index + 30 }}&category=people" class="card-img-top rounded-circle mx-auto mt-3" alt="{{ member.name }}" style="width: 150px; height: 150px;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ member.name }}</h5>
+                        <p class="card-text">{{ member.position }}</p>
+                        <p>{{ member.bio }}</p>
+                        <div class="social-links">
+                            <a href="#" class="text-muted me-2"><i class="bi bi-linkedin"></i></a>
+                            <a href="#" class="text-muted me-2"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="text-muted"><i class="bi bi-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

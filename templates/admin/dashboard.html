@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - {{ current_user.username }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .recent-activity {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .quick-actions {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .action-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 10px;
+        }
+        .action-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 56px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: #333;
+            padding: 0.75rem 1rem;
+        }
+        .sidebar .nav-link.active {
+            color: #fff;
+            background-color: #0d6efd;
+        }
+        .sidebar .nav-link:hover {
+            color: #fff;
+            background-color: #495057;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="btn btn-outline-light d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('admin.dashboard') }}">
+                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.home') }}" target="_blank">
+                            <i class="fas fa-external-link-alt me-1"></i>View Website
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.edit_company') }}">
+                                <i class="fas fa-building me-2"></i>Company Settings
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title" id="sidebarLabel">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body bg-dark">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="{{ url_for('admin.dashboard') }}">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.services') }}">
+                        <i class="fas fa-tools me-2"></i>Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.portfolio') }}">
+                        <i class="fas fa-briefcase me-2"></i>Portfolio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.blog') }}">
+                        <i class="fas fa-blog me-2"></i>Blog
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.team') }}">
+                        <i class="fas fa-users me-2"></i>Team
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.testimonials') }}">
+                        <i class="fas fa-star me-2"></i>Testimonials
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.contacts') }}">
+                        <i class="fas fa-envelope me-2"></i>Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white-50" href="{{ url_for('admin.edit_company') }}">
+                        <i class="fas fa-building me-2"></i>Company
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-dark sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column pt-3">
+                        <li class="nav-item">
+                            <a class="nav-link active text-white" href="{{ url_for('admin.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.services') }}">
+                                <i class="fas fa-tools me-2"></i>Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.portfolio') }}">
+                                <i class="fas fa-briefcase me-2"></i>Portfolio
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.blog') }}">
+                                <i class="fas fa-blog me-2"></i>Blog
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.team') }}">
+                                <i class="fas fa-users me-2"></i>Team
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.testimonials') }}">
+                                <i class="fas fa-star me-2"></i>Testimonials
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.contacts') }}">
+                                <i class="fas fa-envelope me-2"></i>Messages
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.edit_company') }}">
+                                <i class="fas fa-building me-2"></i>Company
+                            </a>
+                        </li>
+                        {% if current_user.role == 'admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white-50" href="{{ url_for('admin.users') }}">
+                                <i class="fas fa-user-shield me-2"></i>Users
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+        <!-- Welcome Header -->
+        <div class="welcome-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2"><i class="fas fa-chart-line me-3"></i>Welcome back, {{ current_user.username }}!</h1>
+                    <p class="mb-0 opacity-75">Here's what's happening with your website today.</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex justify-content-end">
+                        <div class="me-4">
+                            <div class="text-white-50 small">Last Login</div>
+                            <div class="fw-bold">{{ current_user.username }}</div>
+                        </div>
+                        <div>
+                            <div class="text-white-50 small">Status</div>
+                            <span class="badge bg-success fs-6">Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tools stats-icon mb-2"></i>
+                        <div class="stats-number">{{ services_count }}</div>
+                        <div class="card-title h6 mb-0">Services</div>
+                        <a href="{{ url_for('admin.services') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-briefcase stats-icon mb-2"></i>
+                        <div class="stats-number">{{ portfolio_count }}</div>
+                        <div class="card-title h6 mb-0">Portfolio</div>
+                        <a href="{{ url_for('admin.portfolio') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-blog stats-icon mb-2"></i>
+                        <div class="stats-number">{{ blog_count }}</div>
+                        <div class="card-title h6 mb-0">Blog Posts</div>
+                        <a href="{{ url_for('admin.blog') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users stats-icon mb-2"></i>
+                        <div class="stats-number">{{ team_count }}</div>
+                        <div class="card-title h6 mb-0">Team Members</div>
+                        <a href="{{ url_for('admin.team') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-star stats-icon mb-2"></i>
+                        <div class="stats-number">{{ testimonials_count }}</div>
+                        <div class="card-title h6 mb-0">Testimonials</div>
+                        <a href="{{ url_for('admin.testimonials') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-envelope stats-icon mb-2"></i>
+                        <div class="stats-number">{{ contacts_count }}</div>
+                        <div class="card-title h6 mb-0">Messages</div>
+                        <a href="{{ url_for('admin.contacts') }}" class="btn btn-light btn-sm mt-2">View</a>
+                    </div>
+                </div>
+            </div>
+            {% if current_user.role == 'admin' %}
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3 ">
+                <div class="card user-management-card text-white h-100 bg-success">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-shield stats-icon mb-2"></i>
+                        <div class="stats-number">{{ users|length }}</div>
+                        <div class="card-title h6 mb-0">Users</div>
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-light btn-sm mt-2">Manage</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <!-- Recent Activity -->
+            <div class="col-lg-8 mb-4">
+                <div class="recent-activity">
+                    <h4 class="mb-3"><i class="fas fa-clock me-2"></i>Recent Activity</h4>
+
+                    <!-- Recent Contacts -->
+                    <div class="mb-4">
+                        <h6 class="text-primary mb-3"><i class="fas fa-envelope me-2"></i>Recent Contact Messages</h6>
+                        {% if recent_contacts %}
+                            {% for contact in recent_contacts %}
+                            <div class="activity-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ contact.name }}</strong>
+                                        <span class="text-muted ms-2">{{ contact.email }}</span>
+                                        <br>
+                                        <small class="text-muted">{{ contact.subject or 'No subject' }}</small>
+                                    </div>
+                                    <small class="text-muted">{{ contact.date_sent.strftime('%b %d, %Y %H:%M') }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted mb-0">No recent contact messages.</p>
+                        {% endif %}
+                    </div>
+
+                   
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="col-lg-4">
+                <div class="quick-actions p-3">
+                    <h5 class="mb-3"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.new_service') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-plus-circle fa-2x text-primary mb-2"></i>
+                                <div class="small">Add Service</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.new_portfolio') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-plus-circle fa-2x text-success mb-2"></i>
+                                <div class="small">Add Portfolio</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.new_blog_post') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-plus-circle fa-2x text-info mb-2"></i>
+                                <div class="small">New Blog Post</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.new_team_member') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-plus-circle fa-2x text-warning mb-2"></i>
+                                <div class="small">Add Team Member</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.new_testimonial') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-plus-circle fa-2x text-danger mb-2"></i>
+                                <div class="small">Add Testimonial</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('admin.edit_company') }}" class="card action-card text-center p-3 text-decoration-none">
+                                <i class="fas fa-cog fa-2x text-secondary mb-2"></i>
+                                <div class="small">Company Settings</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+               
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stats cards on load
+            const statsCards = document.querySelectorAll('.stats-card');
+            statsCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+
+            // Add hover effects to action cards
+            const actionCards = document.querySelectorAll('.action-card');
+            actionCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

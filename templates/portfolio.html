@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio - Company Website{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-4">Our Portfolio</h1>
+        <p class="text-center lead mb-5">Explore our successful projects and see how we've helped businesses achieve their goals.</p>
+        <div class="row">
+            {% for item in items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if item.image %}
+                    <img src="https://picsum.photos/400/300?random={{ loop.index + 10 }}&category=work" class="card-img-top" alt="{{ item.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.title }}</h5>
+                        <p class="card-text">{{ item.description }}</p>
+                        {% if item.link %}
+                        <a href="{{ item.link }}" class="btn btn-primary" target="_blank">View Project <i class="bi bi-arrow-up-right"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
